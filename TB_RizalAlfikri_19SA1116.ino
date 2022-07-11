@@ -7,6 +7,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <LiquidMenu.h>
 #include <string.h>
+#include <EEPROM.h>
 
 // Konfigurasi PIN
 #define CLKPIN 14
@@ -35,6 +36,7 @@ Keypad keypad2 = Keypad(
     ROWS2,
     COLS2);
 
+
 // Konfigurasi untuk LCD
 LiquidCrystal_I2C lcd (0x27, 20, 4);
 
@@ -51,14 +53,20 @@ char bufferWaktu[10];
 char bufferTanggal[10];
 const unsigned long menuInterval = 1000;
 unsigned long waktuMenuSebelum = 0;
+int bufferKeyNumerik;
 float batasSuhu = 0;
+char CustomKey;
 
 // Konfigurasi Menu
 // >>>>> seleksi ganti password <<<<<
-LiquidLine selectGanti(0,1, ">>");
-LiquidLine selectGanti2(0,2,">>");
-LiquidLine selectGanti3(0,3,">>");
 LiquidLine lineSimpan(0,3,"2. Simpan");
+LiquidLine lineTersimpan(5,2, "Tersimpan!");
+
+// >>>>> SCREEN MASUKKAN VALUE <<<<<
+LiquidLine lineJudulValue(5,0,"Masukkan Value");
+LiquidLine lineValue(3,1,bufferKeyNumerik);
+LiquidScreen screenMasukkanValue(lineJudulValue,lineValue,lineSimpan);
+LiquidScreen screenTersimpan(lineTersimpan);
 
 // ----- SCREEN MAIN -----
 LiquidLine lineJudulTanggal(5, 0, "Lihat Waktu");
@@ -85,8 +93,8 @@ LiquidScreen screenMenuPassword(lineJudulPassword, lineGantiPassword, lineHapusP
 // ----- BATAS SUHU -----
 LiquidLine lineJudulSuhu(5,0,"Suhu");
 LiquidLine lineBatasCurrent(0,1,"Batas Suhu : ", batasSuhu);
-LiquidLine lineEditSuhu(0,2,"1. Edit Suhu : ");
-LiquidScreen screenSuhu(lineJudulSuhu,lineBatasCurrent, lineEditSuhu, lineSimpan);
+LiquidLine lineEditSuhu(0,3,"1. Edit Suhu");
+LiquidScreen screenSuhu(lineJudulSuhu,lineBatasCurrent, lineEditSuhu);
 
 // ----- FAN ON/OFF -----
 LiquidLine lineJudulFan(5,0,"Fan On/Off");
@@ -109,6 +117,8 @@ LiquidMenu menuPassword(lcd, screenMenuPassword);
 LiquidMenu menuBatasSuhu(lcd, screenSuhu);
 LiquidMenu menuSettings(lcd,screenMenuSettings);
 LiquidMenu menuFan(lcd,screenFan);
+LiquidMenu menuIsiVal(lcd,screenMasukkanValue);
+LiquidMenu menuTersimpan(lcd,screenTersimpan);
 // ----------------
 
 // ----- SYSTEM MENU -----
@@ -127,6 +137,21 @@ void goToFan(){
     menuSystem.change_menu(menuFan);
 }
 
+void isiValueBatasSuhu(){
+    menuSystem.add_menu(menuIsiVal);
+    menuSystem.change_menu(menuIsiVal);
+    bufferKeyNumerik = 0;
+}
+
+void simpanDataBatasSuhu(){
+    batasSuhu = (float)bufferKeyNumerik;
+    EEPROM.put(9,batasSuhu);
+    menuSystem.add_menu(menuTersimpan);
+    menuSystem.change_menu(menuTersimpan);
+    delay(1000);
+    menuSystem.change_menu(menuBatasSuhu);
+}
+
 
 
 
@@ -139,11 +164,14 @@ void setup()
     lcd.init();
     lcd.backlight();
     Serial.begin(9600);
+    EEPROM.get(9,batasSuhu);
 
     menuSystem.update();
     lineMenuPassword.attach_function(1,goToPasswordMenu);
     lineMenuBatasSuhu.attach_function(1,goToBatasSuhu);
     lineMenuFan.attach_function(1,goToFan);
+    lineEditSuhu.attach_function(1,isiValueBatasSuhu);
+    lineSimpan.attach_function(1,simpanDataBatasSuhu);
 
     menuSystem.add_menu(menu);
     menuSystem.change_menu(menu);
@@ -168,11 +196,13 @@ void loop()
     tanggal = String(myRTC.dayofmonth) + "/" + 
     (myRTC.month) + "/" + (myRTC.year);
     strcpy(bufferTanggal, tanggal.c_str());
+    //Serial.println(batasSuhuInt);
+    
 
     // Tangkap inputan Keyboard Navigasi
-    char customKey = keypad2.getKey();
+    CustomKey = keypad2.getKey();
 
-    switch (customKey)
+    switch (CustomKey)
     {
     case 'A':
         menuSystem.next_screen();
@@ -193,7 +223,11 @@ void loop()
         menuSystem.add_menu(menu);
         menuSystem.change_menu(menu);
         break;
+    case '0' ... '9':   
+        bufferKeyNumerik = bufferKeyNumerik *10 +(CustomKey - '0');
+        break;
     }
+        
 
 
     // Setting MenuInterval millis();

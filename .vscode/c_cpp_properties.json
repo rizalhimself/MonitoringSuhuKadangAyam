@@ -24,6 +24,7 @@
                 "/home/rizalhimself/Arduino/libraries/LiquidCrystal_I2C",
                 "/home/rizalhimself/.arduino15/packages/arduino/hardware/avr/1.8.5/libraries/Wire/src",
                 "/home/rizalhimself/Arduino/libraries/LiquidMenu/src",
+                "/home/rizalhimself/.arduino15/packages/arduino/hardware/avr/1.8.5/libraries/EEPROM/src",
                 "/home/rizalhimself/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include",
                 "/home/rizalhimself/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include-fixed",
                 "/home/rizalhimself/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/avr/include"
