@@ -192,6 +192,7 @@ void loop()
     case 'D':
         menuSystem.add_menu(menu);
         menuSystem.change_menu(menu);
+        break;
     }
 
 
