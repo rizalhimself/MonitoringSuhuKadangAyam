@@ -15,8 +15,7 @@
 #define RSTPIN 16
 #define DHTPIN 17
 #define DHTTYPE DHT11
-const int RELAY_PIN = 10; 
-
+const int RELAY_PIN = 10;
 
 // Konfigurasi untuk keypad
 const byte ROWS2 = 4;
@@ -37,15 +36,14 @@ Keypad keypad2 = Keypad(
     ROWS2,
     COLS2);
 
-
 // Konfigurasi untuk LCD
-LiquidCrystal_I2C lcd (0x27, 20, 4);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 // Konfigurasi SensorDHT
 DHT dht(DHTPIN, DHTTYPE);
 
 // Konfigurasi Modul RTC
-virtuabotixRTC myRTC(CLKPIN,DATAPIN,RSTPIN);
+virtuabotixRTC myRTC(CLKPIN, DATAPIN, RSTPIN);
 
 // Konfigurasi Variabel
 float kelembapan, suhu;
@@ -62,204 +60,207 @@ char CustomKey;
 
 // Konfigurasi Menu
 // >>>>> seleksi ganti password <<<<<
-LiquidLine lineSimpanSuhu(0,3,"1. Simpan Suhu");
-LiquidLine lineSimpanPassword(0,3,"1. Simpan Password");
-LiquidLine lineTersimpan(5,2, "Tersimpan!");
-LiquidLine lineTerhapus(5,2, "Terhapus!");
+LiquidLine lineSimpanSuhu(0, 3, "1. Simpan Suhu");
+LiquidLine lineSimpanPassword(0, 3, "1. Simpan Password");
+LiquidLine lineTersimpan(5, 2, "Tersimpan!");
+LiquidLine lineTerhapus(5, 2, "Terhapus!");
 
 // >>>>> SCREEN MASUKKAN VALUE <<<<<
-LiquidLine lineJudulValue(5,0,"Masukkan Value");
-LiquidLine lineValue(3,1,bufferKeyNumerik);
-LiquidScreen screenMasukkanValueSuhu(lineJudulValue,lineValue,lineSimpanSuhu);
-LiquidScreen screenMasukkanValuePassword(lineJudulValue,lineValue,lineSimpanPassword);
+LiquidLine lineJudulValue(5, 0, "Masukkan Value");
+LiquidLine lineValue(3, 1, bufferKeyNumerik);
+LiquidScreen screenMasukkanValueSuhu(lineJudulValue, lineValue, lineSimpanSuhu);
+LiquidScreen screenMasukkanValuePassword(lineJudulValue, lineValue, lineSimpanPassword);
 LiquidScreen screenTersimpan(lineTersimpan);
 LiquidScreen screenTerhapus(lineTerhapus);
 
 // ----- SCREEN MAIN -----
 LiquidLine lineJudulTanggal(5, 0, "Lihat Waktu");
-LiquidLine lineJam(0, 1, "Jam :",bufferWaktu);
-LiquidLine lineTanggal(0, 2, "Tgl :",bufferTanggal);
-// create a screen from the above lines
+LiquidLine lineJam(0, 1, "Jam :", bufferWaktu);
+LiquidLine lineTanggal(0, 2, "Tgl :", bufferTanggal);
 LiquidScreen screenMain(lineJudulTanggal, lineJam, lineTanggal);
 // --------------------------
 
 // ----- STATUS SCREEN -----
-// a line of two string literals and a float variable
 LiquidLine lineJudulTemp(5, 0, "Lihat Suhu");
-LiquidLine lineBatasCurrentDisp(0,3,"Batas Suhu : ", batasSuhu);
-LiquidLine lineSuhu(0,1,"Suhu :",suhu);
-LiquidLine lineKelembapan(0,2, "Kelembapan :",kelembapan);
+LiquidLine lineBatasCurrentDisp(0, 3, "Batas Suhu : ", batasSuhu);
+LiquidLine lineSuhu(0, 1, "Suhu :", suhu);
+LiquidLine lineKelembapan(0, 2, "Kelembapan :", kelembapan);
 LiquidScreen screenStatus(lineJudulTemp, lineSuhu, lineKelembapan, lineBatasCurrentDisp);
 // -------------------------
 
 // ----- PASSWORD -----
-LiquidLine lineJudulPassword(5,0,"Password");
-LiquidLine lineGantiPassword(0,1,"1. Ganti Password");
-LiquidLine lineResetPassword(0,2,"2. Reset Password");
-LiquidScreen screenMenuPassword(lineJudulPassword, lineGantiPassword, lineResetPassword);
+LiquidLine lineJudulPassword(5, 0, "Password");
+LiquidLine lineGantiPassword(0, 2, "1. Ganti Password");
+LiquidLine lineResetPassword(0, 3, "2. Reset Password");
+LiquidLine linePassAnda(0, 1, "Password Anda: ", password);
+LiquidScreen screenMenuPassword(lineJudulPassword, linePassAnda, lineGantiPassword, lineResetPassword);
 
 // ----- BATAS SUHU -----
-LiquidLine lineJudulSuhu(5,0,"Suhu");
-LiquidLine lineBatasCurrent(0,3,"Batas Suhu : ", batasSuhu);
-LiquidLine lineEditSuhu(0,3,"1. Edit Suhu");
-LiquidScreen screenSuhu(lineJudulSuhu,lineBatasCurrent, lineEditSuhu);
+LiquidLine lineJudulSuhu(5, 0, "Suhu");
+LiquidLine lineBatasCurrent(0, 2, "Batas Suhu : ", batasSuhu);
+LiquidLine lineEditSuhu(0, 3, "1. Edit Suhu");
+LiquidScreen screenSuhu(lineJudulSuhu, lineBatasCurrent, lineEditSuhu);
 
 // ----- FAN ON/OFF -----
-LiquidLine lineJudulFan(5,0,"Fan On/Off");
-LiquidLine lineFanOn(0,1,"1. Fan On");
-LiquidLine lineFanOff(0,2,"2. Fan Off");
+LiquidLine lineJudulFan(5, 0, "Fan On/Off");
+LiquidLine lineFanOn(0, 1, "1. Fan On");
+LiquidLine lineFanOff(0, 2, "2. Fan Off");
 LiquidScreen screenFan(lineJudulFan, lineFanOn, lineFanOff);
 
 // ----- SETTINGS -----
-LiquidLine lineJudulSettings(5,0,"Settings");
-LiquidLine lineMenuPassword(0,1,"1. Password");
-LiquidLine lineMenuBatasSuhu(0,2,"2. Batas Suhu");
-LiquidLine lineMenuFan(0,3,"3. Fan On/Off");
-LiquidScreen screenMenuSettings(lineJudulSettings,lineMenuPassword, lineMenuBatasSuhu, lineMenuFan);
-
+LiquidLine lineJudulSettings(5, 0, "Settings");
+LiquidLine lineMenuPassword(0, 1, "1. Password");
+LiquidLine lineMenuBatasSuhu(0, 2, "2. Batas Suhu");
+LiquidLine lineMenuFan(0, 3, "3. Fan On/Off");
+LiquidScreen screenMenuSettings(lineJudulSettings, lineMenuPassword, lineMenuBatasSuhu, lineMenuFan);
 
 // ----- MENU -----
-// create a menu from the screens
 LiquidMenu menu(lcd, screenMain, screenStatus);
 LiquidMenu menuPassword(lcd, screenMenuPassword);
 LiquidMenu menuBatasSuhu(lcd, screenSuhu);
-LiquidMenu menuSettings(lcd,screenMenuSettings);
-LiquidMenu menuFan(lcd,screenFan);
-LiquidMenu menuIsiValSuhu(lcd,screenMasukkanValueSuhu);
-LiquidMenu menuIsiValPassword(lcd,screenMasukkanValuePassword);
-LiquidMenu menuTersimpan(lcd,screenTersimpan);
-LiquidMenu menuTerhapus(lcd,screenTerhapus);
+LiquidMenu menuSettings(lcd, screenMenuSettings);
+LiquidMenu menuFan(lcd, screenFan);
+LiquidMenu menuIsiValSuhu(lcd, screenMasukkanValueSuhu);
+LiquidMenu menuIsiValPassword(lcd, screenMasukkanValuePassword);
+LiquidMenu menuTersimpan(lcd, screenTersimpan);
+LiquidMenu menuTerhapus(lcd, screenTerhapus);
 // ----------------
 
 // ----- SYSTEM MENU -----
 LiquidSystem menuSystem(menuSettings, menuPassword, menuBatasSuhu, menuFan);
 
 // ----- FUNCTION -----
-void goToPasswordMenu(){
+void goToPasswordMenu()
+{
     menuSystem.change_menu(menuPassword);
 }
 
-void goToBatasSuhu(){
+void goToBatasSuhu()
+{
     menuSystem.change_menu(menuBatasSuhu);
 }
 
-void goToFan(){
+void goToFan()
+{
     menuSystem.change_menu(menuFan);
 }
 
-void isiValueBatasSuhu(){
+void isiValueBatasSuhu()
+{
     menuSystem.add_menu(menuIsiValSuhu);
     menuSystem.change_menu(menuIsiValSuhu);
     bufferKeyNumerik = 0;
 }
 
-void isiValuePassword(){
+void isiValuePassword()
+{
     menuSystem.add_menu(menuIsiValPassword);
     menuSystem.change_menu(menuIsiValPassword);
     bufferKeyNumerik = 0;
 }
 
-void simpanDataBatasSuhu(){
+void simpanDataBatasSuhu()
+{
     batasSuhu = (float)bufferKeyNumerik;
-    EEPROM.put(9,batasSuhu);
+    EEPROM.put(9, batasSuhu);
     menuSystem.add_menu(menuTersimpan);
     menuSystem.change_menu(menuTersimpan);
     delay(1000);
     menuSystem.change_menu(menuBatasSuhu);
 }
 
-void simpanDataPassword(){
+void simpanDataPassword()
+{
     password = bufferKeyNumerik;
-    EEPROM.put(10,password);
+    EEPROM.put(10, password);
     menuSystem.add_menu(menuTersimpan);
     menuSystem.change_menu(menuTersimpan);
     delay(1000);
     menuSystem.change_menu(menuPassword);
 }
 
-void resetDataPassword(){
+void resetDataPassword()
+{
     password = 0000;
-    EEPROM.update(10,password);
+    EEPROM.update(10, password);
     menuSystem.add_menu(menuTerhapus);
     menuSystem.change_menu(menuTerhapus);
     delay(1000);
     menuSystem.change_menu(menuPassword);
 }
 
-void FanOn(){
+void FanOn()
+{
     fanOn = true;
     kipasNyala = true;
 }
 
-void FanOff(){
+void FanOff()
+{
     fanOn = false;
     kipasNyala = false;
 }
 
-void FanOnOff(){
+void FanOnOff()
+{
     if (fanOn == true)
-        {
-            digitalWrite(RELAY_PIN, LOW);
-        } else if(fanOn == false)
-        {
-            digitalWrite(RELAY_PIN, HIGH);
-        }
+    {
+        digitalWrite(RELAY_PIN, LOW);
+    }
+    else if (fanOn == false)
+    {
+        digitalWrite(RELAY_PIN, HIGH);
+    }
 }
 
-void CheckSuhu(){
+void CheckSuhu()
+{
     if (kipasNyala == true && fanOn == false && suhu < batasSuhu)
     {
         fanOn = true;
-    } else if (kipasNyala == true && fanOn == true && suhu < batasSuhu)
+    }
+    else if (kipasNyala == true && fanOn == true && suhu < batasSuhu)
     {
         fanOn = true;
-    } else if (kipasNyala == false && suhu >= batasSuhu)
+    }
+    else if (kipasNyala == false && suhu >= batasSuhu)
     {
         fanOn = true;
-    } else if (kipasNyala == false && suhu < batasSuhu)
+    }
+    else if (kipasNyala == false && suhu < batasSuhu)
     {
         fanOn = false;
     }
-    
-    
-    
-    
-    
 }
-
 
 void setup()
 {
     // Set Waktu
-    //myRTC.setDS1302Time(00, 50, 16, 6, 7, 10, 2022);
+    // myRTC.setDS1302Time(00, 50, 16, 6, 7, 10, 2022);
     pinMode(RELAY_PIN, OUTPUT);
     dht.begin();
     myRTC.updateTime();
     lcd.init();
     lcd.backlight();
     Serial.begin(9600);
-    EEPROM.get(9,batasSuhu);
-    EEPROM.get(10,password);
+    EEPROM.get(9, batasSuhu);
+    EEPROM.get(10, password);
 
     menuSystem.update();
-    lineMenuPassword.attach_function(1,goToPasswordMenu);
-    lineMenuBatasSuhu.attach_function(1,goToBatasSuhu);
-    lineMenuFan.attach_function(1,goToFan);
-    lineEditSuhu.attach_function(1,isiValueBatasSuhu);
-    lineSimpanSuhu.attach_function(1,simpanDataBatasSuhu);
-    lineGantiPassword.attach_function(1,isiValuePassword);
-    lineResetPassword.attach_function(1,resetDataPassword);
-    lineSimpanPassword.attach_function(1,simpanDataPassword);
-    lineFanOn.attach_function(1,FanOn);
-    lineFanOff.attach_function(1,FanOff);
-
+    lineMenuPassword.attach_function(1, goToPasswordMenu);
+    lineMenuBatasSuhu.attach_function(1, goToBatasSuhu);
+    lineMenuFan.attach_function(1, goToFan);
+    lineEditSuhu.attach_function(1, isiValueBatasSuhu);
+    lineSimpanSuhu.attach_function(1, simpanDataBatasSuhu);
+    lineGantiPassword.attach_function(1, isiValuePassword);
+    lineResetPassword.attach_function(1, resetDataPassword);
+    lineSimpanPassword.attach_function(1, simpanDataPassword);
+    lineFanOn.attach_function(1, FanOn);
+    lineFanOff.attach_function(1, FanOff);
 
     menuSystem.add_menu(menu);
     menuSystem.change_menu(menu);
-
-
 }
-
 
 void loop()
 {
@@ -271,15 +272,13 @@ void loop()
     myRTC.updateTime();
 
     /*Deskripsi Waktu*/
-    waktu = String(myRTC.hours)+ ":" + String(myRTC.minutes);
+    waktu = String(myRTC.hours) + ":" + String(myRTC.minutes);
     /*Deskripsi Tanggal*/
     strcpy(bufferWaktu, waktu.c_str());
-    tanggal = String(myRTC.dayofmonth) + "/" + 
-    (myRTC.month) + "/" + (myRTC.year);
+    tanggal = String(myRTC.dayofmonth) + "/" +
+              (myRTC.month) + "/" + (myRTC.year);
     strcpy(bufferTanggal, tanggal.c_str());
-    //Serial.println(batasSuhuInt);
-    
-    
+    // Serial.println(batasSuhuInt);
 
     // Tangkap inputan Keyboard Navigasi
     CustomKey = keypad2.getKey();
@@ -299,21 +298,20 @@ void loop()
         menuSystem.change_menu(menuSettings);
         break;
     case '*':
-        menuSystem.call_function(1,true);
+        menuSystem.call_function(1, true);
         break;
     case 'D':
         menuSystem.add_menu(menu);
         menuSystem.change_menu(menu);
         break;
-    case '0' ... '9':   
-        bufferKeyNumerik = bufferKeyNumerik *10 +(CustomKey - '0');
+    case '0' ... '9':
+        bufferKeyNumerik = bufferKeyNumerik * 10 + (CustomKey - '0');
         break;
     }
 
     CheckSuhu();
     FanOnOff();
-    
-        
+
     // Setting MenuInterval millis();
     unsigned long waktuMenu = millis();
 
@@ -321,10 +319,5 @@ void loop()
     {
         waktuMenuSebelum = waktuMenu;
         menuSystem.update();
-        
     }
-
-
-    
 }
-
